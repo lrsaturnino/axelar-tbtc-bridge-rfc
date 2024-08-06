@@ -1,0 +1,38 @@
+= Cross-Chain tBTC Minting and Redemption Flow
+
+== L1 (Ethereum Mainnet) Setup:
+- Implement a "Global Ledger" contract that keeps track of all tBTC minted across all chains.
+- Create an "L2 Minting Allowance" system within this contract.
+
+== L2 Setup:
+- Implement a wtBTC contract that can mint tokens based on approved requests.
+- Create a "Minting Request" contract that interfaces with Axelar.
+
+== Axelar Integration:
+- Use Axelar for cross-chain communication between L1 and L2s.
+
+== Process Flow:
+
+=== L2 Minting Request:
+- User initiates a minting request on L2.
+- The L2 Minting Request contract sends this request to L1 via Axelar.
+
+=== L1 Approval:
+- The Global Ledger contract on L1 receives the request.
+- It checks if there's sufficient unminted tBTC allowance.
+- If approved, it updates the global ledger and sends an approval message back to L2 via Axelar.
+
+=== L2 Minting:
+- The L2 contract receives the approval.
+- It mints the corresponding amount of wtBTC to the user.
+
+=== Periodic Reconciliation:
+- Regularly (e.g., daily), aggregate all L2 minting data on L1.
+- Mint the corresponding amount of canonical tBTC on L1 to match the total wtBTC minted across all L2s.
+- This tBTC is held in a special contract as backing for all wtBTC.
+
+=== Redemption Process:
+- When a user wants to redeem wtBTC for actual BTC:
+  a. They burn wtBTC on L2.
+  b. This triggers a message to L1 via Axelar.
+  c. L1 processes the redemption using the canonical tBTC redemption process.
